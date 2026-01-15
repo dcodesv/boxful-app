@@ -17,14 +17,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FFF4F1",
         "foregroundImage": "./assets/icons/android-icon.png",
-        "backgroundImage": "./assets/icons/android-icon.png",
-        "monochromeImage": "./assets/icons/android-icon.png"
+        "backgroundImage": "./assets/icons/splash-background.png",
+        "monochromeImage": "./assets/icons/android-icon.png",
+        "resizeMode": "cover"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.anonymous.boxfulapp"
     },
     "web": {
       "output": "static",

@@ -27,6 +27,11 @@ export default function RootLayout() {
     'background'
   );
 
+  SplashScreen.setOptions({
+    duration: 400,
+    fade: true,
+  });
+
   useEffect(() => {
     if (fontsLoaded || fontError) {
       // Ocultar la pantalla de splash cuando las fuentes estén cargadas o haya un error
