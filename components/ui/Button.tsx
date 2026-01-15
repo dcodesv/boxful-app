@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import React from "react";
-import { DimensionValue, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { DimensionValue, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
 
 interface ButtonProps {
     title?: string;
@@ -12,6 +12,8 @@ interface ButtonProps {
     Icon?: React.ComponentType<{ size?: number; color?: string }>;
     iconPosition?: 'left' | 'right';
     width?: DimensionValue | undefined;
+    style?: StyleProp<ViewStyle>;
+    className?: string;
 }
 
 export default function Button({ 
@@ -23,6 +25,8 @@ export default function Button({
     Icon, 
     iconPosition = 'left',
     width = undefined,
+    style = {},
+    className = '',
 }: ButtonProps) {
     // Background colors
     const colorPrimary = useThemeColor({ light: Colors.light.primary, dark: Colors.dark.primary }, 'primary');
@@ -68,9 +72,9 @@ export default function Button({
         <TouchableOpacity 
             onPress={onPress} 
             disabled={disabled} 
-            style={buttonStyle}
             activeOpacity={0.7}
-            className="flex-row items-center justify-center rounded-xl"
+            className={`flex-row items-center justify-center rounded-xl ${className}`}
+            style={[buttonStyle, style]}
         >
             {Icon && iconPosition === 'left' && (
                 <Icon size={iconSize} color={iconColor} />

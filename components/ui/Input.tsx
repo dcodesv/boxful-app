@@ -57,7 +57,7 @@ export default function Input({
         weight="medium"
         className="mb-1 ml-2"
         style={{
-          color: error ? colorError : isFocused ? colorSecondary : colorPlaceholder,
+          color: error ? colorError : isFocused ? colorSecondary : colorText,
         }}
       >
         {label}
