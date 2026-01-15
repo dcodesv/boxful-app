@@ -25,6 +25,8 @@ export const Colors = {
     error: '#FF0000',
     success: '#00FF00',
     warning: '#FFA500',
+    onboardingDot: '#FFFFFF',
+    onboardingDotActive: '#DFFB69',
   },
   dark: {
     text: '#CCC6C2',
@@ -47,6 +49,8 @@ export const Colors = {
     error: '#FF0000',
     success: '#00FF00',
     warning: '#FFA500',
+    onboardingDot: '#FFFFFF',
+    onboardingDotActive: '#DFFB69',
   },
 };
 
