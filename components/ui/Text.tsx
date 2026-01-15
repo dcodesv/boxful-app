@@ -2,7 +2,7 @@ import { Colors } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { Text as TextComponent, TextProps } from 'react-native';
 
-type TextVariant = 'default' | 'primary' | 'secondary' | 'tertiary' | 'muted' | 'inverse';
+type TextVariant = 'default' | 'primary' | 'secondary' | 'tertiary' | 'muted' | 'inverse' | 'error' | 'success' | 'warning';
 type TextSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
 type TextWeight = 'light' | 'regular' | 'medium' | 'semibold' | 'bold' | 'extrabold' | 'black';
 
@@ -70,6 +70,9 @@ export default function Text({
     const colorTertiary = useThemeColor({ light: Colors.light.tertiary, dark: Colors.dark.tertiary }, 'tertiary');
     const colorMuted = useThemeColor({ light: Colors.light.iconTertiary, dark: Colors.dark.iconTertiary }, 'iconTertiary');
     const colorInverse = useThemeColor({ light: Colors.dark.text, dark: Colors.light.text }, 'text');
+    const colorError = useThemeColor({ light: Colors.light.error, dark: Colors.dark.error }, 'error');
+    const colorSuccess = useThemeColor({ light: Colors.light.success, dark: Colors.dark.success }, 'success');
+    const colorWarning = useThemeColor({ light: Colors.light.warning, dark: Colors.dark.warning }, 'warning');
 
     const variantColors: Record<TextVariant, string> = {
         default: colorDefault,
@@ -78,6 +81,9 @@ export default function Text({
         tertiary: colorTertiary,
         muted: colorMuted,
         inverse: colorInverse,
+        error: colorError,
+        success: colorSuccess,
+        warning: colorWarning,
     };
 
     const textColor = variantColors[variant];
