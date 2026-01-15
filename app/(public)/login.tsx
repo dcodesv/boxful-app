@@ -1,3 +1,4 @@
+import FingerPrint from "@/assets/icons/fingerprint.svg";
 import BannerLoginDark from "@/assets/images/login-banner-dark.webp";
 import BannerLogin from "@/assets/images/login-banner.webp";
 import LogoBoxFul from "@/assets/images/logo-boxful.svg";
@@ -10,7 +11,6 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import * as SystemUI from "expo-system-ui";
-import { Fingerprint } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -130,13 +130,9 @@ export default function LoginScreen() {
 
               <View className="justify-start w-full gap-4">
                 <Pressable className="flex-row items-center justify-center gap-2 py-1">
-                  <Fingerprint
-                    color={
-                      colorScheme === "dark"
-                        ? Colors.dark.secondary
-                        : Colors.light.secondary
-                    }
-                    size={24}
+                  <FingerPrint
+                    width={24}
+                    height={24}
                   />
 
                   <Text
