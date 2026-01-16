@@ -27,7 +27,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-// Datos de tus 3 pantallas (Boxful)
 const Sliders = [
   {
     id: "1",
@@ -54,19 +53,49 @@ const Sliders = [
 ];
 
 export default function OnboardingScreen() {
-  const { width } = useWindowDimensions();
-  const scrollX = useSharedValue(0);
+  
+  const { width } = useWindowDimensions(); // Obtener el ancho de la pantalla para el scroll horizontal
+  const scrollX = useSharedValue(0); // Valor compartido para la animación de flotación
+  
+  // Animación de salida
+  const exitOpacity = useSharedValue(1);
+  const exitTranslateY = useSharedValue(0);
 
   // Manejador del scroll para las animaciones
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollX.value = event.contentOffset.x;
   });
 
-  const handleFinish = async () => {
-    // AQUÍ: Guardarías en AsyncStorage que ya vio el onboarding
-    // await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+  // Función para navegar después de la animación
+  const navigateToLogin = () => {
     router.replace("/(public)/login");
   };
+
+  const handleFinish = () => {
+    // Aquí se debe guardar el estado de que el usuario ya vio el onboarding
+
+    const animationDuration = 280;
+    // Ejecutar animación de salida
+    exitOpacity.value = withTiming(0, { 
+      duration: 500, 
+      easing: Easing.out(Easing.cubic) 
+    });
+    exitTranslateY.value = withTiming(80, { 
+      duration: animationDuration, 
+      easing: Easing.out(Easing.cubic) 
+    });
+    
+    // Navegar después de la animación
+    setTimeout(navigateToLogin, animationDuration);
+  };
+
+  // Estilo animado para la salida
+  const exitAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: exitOpacity.value,
+    transform: [
+      { translateY: exitTranslateY.value },
+    ],
+  }));
 
   const RenderItem = ({ item, index }: any) => {
     // Valor compartido para la animación de flotación
@@ -76,12 +105,14 @@ export default function OnboardingScreen() {
       // Iniciar animación de flotación continua
       floatAnimation.value = withRepeat(
         withTiming(1, {
-          duration: 2000,
-          easing: Easing.inOut(Easing.sin),
+          duration: 1500,
+          easing: Easing.inOut(Easing.cubic),
+
         }),
         -1, // Repetir infinitamente
         true // Reversar la animación
       );
+      
     }, [floatAnimation]);
 
     // Estilo animado para la flotación
@@ -89,9 +120,16 @@ export default function OnboardingScreen() {
       return {
         transform: [
           {
-            translateY: interpolate(floatAnimation.value, [0, 1], [-10, 10]),
+            translateY: interpolate(floatAnimation.value, [0, 1], [0, 20], Extrapolation.CLAMP),
           },
+          {
+            translateX: interpolate(floatAnimation.value, [0, 1], [0, 10], Extrapolation.CLAMP),
+          },
+          {
+            scale: interpolate(floatAnimation.value, [0, 1], [0.95, 1.05], Extrapolation.CLAMP),
+          }, 
         ],
+        opacity: interpolate(floatAnimation.value, [0, 1], [0.6, 1], Extrapolation.CLAMP),
       };
     });
 
@@ -263,7 +301,6 @@ export default function OnboardingScreen() {
           style={{
             borderRadius: 32,
             backgroundColor: "rgba(255, 255, 255, 0.3)",
-            backdropFilter: "blur(10px)",
             justifyContent: "space-between",
             width: "auto",
             alignSelf: "center",
@@ -277,11 +314,14 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View
+    <Animated.View
       className="flex-1"
-      style={{
-        backgroundColor: Colors.light.secondary,
-      }}
+      style={[
+        {
+          backgroundColor: Colors.light.secondary,
+        },
+        exitAnimatedStyle,
+      ]}
     >
       <Animated.FlatList
         data={Sliders}
@@ -337,6 +377,6 @@ export default function OnboardingScreen() {
           Omitir
         </Text>
       </Pressable>
-    </View>
+    </Animated.View>
   );
 }
