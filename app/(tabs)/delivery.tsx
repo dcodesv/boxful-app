@@ -35,7 +35,15 @@ export default function HomeScreen() {
           </View>
           <ActionsHome />
           <View className='bg-[#eee6d1] rounded-xl overflow-hidden'>
-            <Image source={colorScheme === "dark" ? bannerDark : banner} contentFit="cover" contentPosition="center" style={{ height: 140, width: '100%' }} />
+            <Image 
+            cachePolicy="memory-disk"
+            priority="high"
+            recyclingKey={`banner-delivery-${colorScheme}`}
+            transition={200}
+            source={colorScheme === "dark" ? bannerDark : banner} 
+            contentFit="cover" 
+            contentPosition="center" 
+            style={{ height: 140, width: '100%' }} />
           </View>
           <SendList />
         </ScrollView>

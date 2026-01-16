@@ -42,7 +42,11 @@ export default function FacturacionScreen() {
                 source={constructor} 
                 contentFit="contain" 
                 contentPosition="center" 
-                style={{ width: "100%", height: "100%" }} 
+                style={{ width: "100%", height: "100%" }}
+                cachePolicy="memory-disk"
+                priority="high"
+                recyclingKey="constructor-facturacion"
+                transition={200}
               />
             </View>
           </View>

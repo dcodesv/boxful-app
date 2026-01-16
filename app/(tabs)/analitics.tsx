@@ -41,8 +41,12 @@ export default function AnaliticasScreen() {
               <Image 
                 source={constructor} 
                 contentFit="contain" 
-                contentPosition="center" 
-                style={{ width: "100%", height: "100%" }} 
+                contentPosition="center"
+                style={{ width: "100%", height: "100%" }}
+                cachePolicy="memory-disk"
+                priority="high"
+                recyclingKey="constructor-analitics"
+                transition={200}
               />
             </View>
           </View>
