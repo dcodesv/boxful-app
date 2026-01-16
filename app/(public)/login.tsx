@@ -2,6 +2,7 @@ import FingerPrint from "@/assets/icons/fingerprint.svg";
 import BannerLoginDark from "@/assets/images/login-banner-dark.webp";
 import BannerLogin from "@/assets/images/login-banner.webp";
 import LogoBoxFul from "@/assets/images/logo-boxful.svg";
+import AlertModal from "@/components/AlertModal";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
@@ -32,6 +33,7 @@ export default function LoginScreen() {
   const colorScheme = useColorScheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [notEnabledModal, setNotEnabledModal] = useState(false);
 
 
   useEffect(() => {
@@ -129,7 +131,7 @@ export default function LoginScreen() {
               </View>
 
               <View className="justify-start w-full gap-4">
-                <Pressable className="flex-row items-center justify-center gap-2 py-1">
+                <Pressable className="flex-row items-center justify-center gap-2 py-1" onPress={() => setNotEnabledModal(true)}>
                   <FingerPrint
                     width={24}
                     height={24}
@@ -185,7 +187,7 @@ export default function LoginScreen() {
                   />
                 </View>
 
-                <Pressable className="items-center py-1">
+                <Pressable className="items-center py-1" onPress={() => setNotEnabledModal(true)}>
                   <Text as="p" variant="secondary" weight="semibold">
                     Registrar cuenta
                   </Text>
@@ -195,6 +197,14 @@ export default function LoginScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <AlertModal
+        visible={notEnabledModal}
+        type="warning"
+        title="¡Ups!"
+        message="Lo sentimos, pero esta opción no está disponible en este momento"
+        onClose={() => setNotEnabledModal(false)}
+        cancelText="Entendido"
+      />
     </SafeAreaView>
   );
 }

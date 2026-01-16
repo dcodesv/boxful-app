@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import React from "react";
-import { DimensionValue, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import { DimensionValue, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from "react-native";
 
 interface ButtonProps {
     title?: string;
@@ -14,6 +14,7 @@ interface ButtonProps {
     width?: DimensionValue | undefined;
     style?: StyleProp<ViewStyle>;
     className?: string;
+    textStyle?: StyleProp<TextStyle>;
 }
 
 export default function Button({ 
@@ -27,6 +28,7 @@ export default function Button({
     width = undefined,
     style = {},
     className = '',
+    textStyle = {},
 }: ButtonProps) {
     // Background colors
     const colorPrimary = useThemeColor({ light: Colors.light.primary, dark: Colors.dark.primary }, 'primary');
@@ -50,22 +52,22 @@ export default function Button({
     const textSize = size === 'small' ? 12 : size === 'medium' ? 14 : 16;
 
     const buttonStyle = [
-        styles.button,
         {
             backgroundColor,
             height,
             paddingHorizontal,
             opacity: disabled ? 0.5 : 1,
             width,
-        }
+        },
+        styles.button,
     ];
 
-    const textStyle = [
-        styles.text,
+    const textStyleComponent = [
         {
             color: textColor,
             fontSize: textSize,
-        }
+        },
+        styles.text,
     ];
 
     return (
@@ -80,7 +82,7 @@ export default function Button({
                 <Icon size={iconSize} color={iconColor} />
             )}
             {title && (
-                <Text style={textStyle} className="font-mona-medium">
+                <Text style={[styles.text, textStyleComponent, textStyle]} className="font-mona-medium">
                     {title}
                 </Text>
             )}

@@ -1,12 +1,20 @@
+import Text from '@/components/ui/Text';
+import { Modal, View } from 'react-native';
 
-import { Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+interface ModalScreenProps {
+  visible: boolean;
+  onClose: () => void;
+}
 
-
-export default function ModalScreen() {
+export default function ModalScreen({ visible, onClose }: ModalScreenProps) {
   return (
-    <SafeAreaView>
-      <Text className="text-white text-2xl font-medium">Modal</Text>
-    </SafeAreaView>
+    <Modal visible={visible} animationType="fade" onRequestClose={onClose}
+    transparent
+    statusBarTranslucent={true}
+    >
+      <View className="justify-center items-center bg-white rounded-xl p-4">
+      <Text as="h1" weight="bold" size="xl">Modal</Text>
+      </View>
+    </Modal>
   );
 }
