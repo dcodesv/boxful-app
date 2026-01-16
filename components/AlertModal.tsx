@@ -48,8 +48,8 @@ export default function AlertModal({
   const [isModalVisible, setIsModalVisible] = useState(visible);
 
   // Animaciones con Reanimated
-  const opacity = useSharedValue(0);
-  const translateY = useSharedValue(50);
+  const opacity = useSharedValue(0.95);
+  const translateY = useSharedValue(80);
 
   // Función para cerrar el modal después de la animación
   const closeModal = () => {
@@ -63,7 +63,7 @@ export default function AlertModal({
       setIsModalVisible(true);
 
       opacity.value = withTiming(1, {
-        duration: 200,
+        duration: 150,
         easing: Easing.out(Easing.ease),
       });
 
@@ -77,12 +77,12 @@ export default function AlertModal({
       const exitDuration = 250;
 
       opacity.value = withTiming(0, { 
-        duration: 200,
+        duration: 150,
         easing: Easing.in(Easing.ease),
       });
       
       translateY.value = withTiming(80, {
-          duration: 400,
+          duration: exitDuration,
           easing: Easing.out(Easing.ease),
         })
       
@@ -95,7 +95,7 @@ export default function AlertModal({
   useEffect(() => {
     if (!isModalVisible) {
       opacity.value = 0;
-      translateY.value = 50;
+      translateY.value = 80;
     }
   }, [isModalVisible]);
 

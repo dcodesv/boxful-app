@@ -11,6 +11,7 @@ interface ButtonProps {
     disabled?: boolean;
     Icon?: React.ComponentType<{ size?: number; color?: string }>;
     iconPosition?: 'left' | 'right';
+    iconColor?: string;
     width?: DimensionValue | undefined;
     style?: StyleProp<ViewStyle>;
     className?: string;
@@ -25,6 +26,7 @@ export default function Button({
     disabled = false, 
     Icon, 
     iconPosition = 'left',
+    iconColor = undefined,
     width = undefined,
     style = {},
     className = '',
@@ -44,7 +46,7 @@ export default function Button({
 
     const backgroundColor = variant === 'primary' ? colorPrimary : colorSecondary;
     const textColor = variant === 'primary' ? colorPrimaryText : colorSecondaryText;
-    const iconColor = variant === 'primary' ? colorIconPrimary : colorIconSecondary;
+    const iconColorComponent = variant === 'primary' ? colorIconPrimary : colorIconSecondary;
 
     const height = size === 'small' ? 42 : size === 'medium' ? 48 : 56;
     const paddingHorizontal = size === 'small' ? 16 : size === 'medium' ? 20 : 24;
@@ -79,7 +81,7 @@ export default function Button({
             style={[buttonStyle, style]}
         >
             {Icon && iconPosition === 'left' && (
-                <Icon size={iconSize} color={iconColor} />
+                <Icon size={iconSize} color={iconColorComponent || iconColor} />
             )}
             {title && (
                 <Text style={[styles.text, textStyleComponent, textStyle]} className="font-mona-medium">
@@ -87,7 +89,7 @@ export default function Button({
                 </Text>
             )}
             {Icon && iconPosition === 'right' && (
-                <Icon size={iconSize} color={iconColor} />
+                <Icon size={iconSize} color={iconColorComponent || iconColor} />
             )}
         </TouchableOpacity>
     );
