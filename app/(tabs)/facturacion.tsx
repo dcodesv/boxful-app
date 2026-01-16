@@ -1,4 +1,5 @@
 import constructor from "@/assets/images/constructor.webp";
+import AnimatedTabScreen from "@/components/ui/AnimatedTabScreen";
 import Header from "@/components/ui/Header";
 import Text from "@/components/ui/Text";
 import { Colors } from "@/constants/theme";
@@ -18,28 +19,35 @@ export default function FacturacionScreen() {
       className="flex-1"
       edges={["top"]}
     >
-      <ScrollView
-        showsVerticalScrollIndicator={true}
-        contentContainerClassName="px-4"
-      >
-        <Header title="Facturación" />
-        <View className="flex-1 flex-col flex justify-center items-center py-10 gap-8 px-4">
-          <View className="flex-1 flex-col flex justify-center items-center gap-2">
-          <Text as="h1" weight="semibold" size="2xl">
-            ¡Ups! Lo sentimos 😢
-          </Text>
-          <Text as="p" weight="regular" size="lg">
-            Esta pantalla está en construcción.
-          </Text>
+      <AnimatedTabScreen>
+        <ScrollView
+          showsVerticalScrollIndicator={true}
+          contentContainerClassName="px-4"
+        >
+          <Header title="Facturación" />
+          <View className="flex-1 flex-col flex justify-center items-center py-10 gap-8 px-4">
+            <View className="flex-1 flex-col flex justify-center items-center gap-2">
+              <Text as="h1" weight="semibold" size="2xl">
+                ¡Ups! Lo sentimos 😢
+              </Text>
+              <Text as="p" weight="regular" size="lg">
+                Esta pantalla está en construcción.
+              </Text>
+            </View>
+            <View 
+              className="flex-1 flex-col flex justify-center items-center"
+              style={{ flex: 1, width: "100%", minHeight: 250 }}
+            >
+              <Image 
+                source={constructor} 
+                contentFit="contain" 
+                contentPosition="center" 
+                style={{ width: "100%", height: "100%" }} 
+              />
+            </View>
           </View>
-          <View className="flex-1 flex-col flex justify-center items-center"
-          style={{ flex: 1, width: "100%", minHeight: 250 }}
-          >
-            <Image source={constructor} contentFit="contain" contentPosition="center" 
-            style={{ width: "100%", height: "100%" }} />
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </AnimatedTabScreen>
     </SafeAreaView>
   );
 }

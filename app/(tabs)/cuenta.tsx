@@ -1,4 +1,5 @@
 import AlertModal from "@/components/AlertModal";
+import AnimatedTabScreen from "@/components/ui/AnimatedTabScreen";
 import Button from "@/components/ui/Button";
 import Header from "@/components/ui/Header";
 import Text from "@/components/ui/Text";
@@ -74,11 +75,12 @@ export default function CuentaScreen() {
       className="flex-1"
       edges={["top"]}
     >
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerClassName="px-4 pb-8"
-      >
-        <Header title="Cuenta" />
+      <AnimatedTabScreen>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerClassName="px-4 pb-8"
+        >
+          <Header title="Cuenta" />
 
         
         <View className="items-center mt-6 mb-8">
@@ -162,32 +164,33 @@ export default function CuentaScreen() {
           />
         </View>
 
-        {/* Modal de cerrar sesión */}
-        <AlertModal
-          visible={logoutModal}
-          type="warning"
-          title="¿Cerrar sesión?"
-          message="¿Estás seguro de que deseas cerrar tu sesión?"
-          onClose={() => setLogoutModal(false)}
-          onConfirm={handleLogout}
-          confirmText="Cerrar sesión"
-          cancelText="Cancelar"
-          showCancelButton
-        />
+          {/* Modal de cerrar sesión */}
+          <AlertModal
+            visible={logoutModal}
+            type="warning"
+            title="¿Cerrar sesión?"
+            message="¿Estás seguro de que deseas cerrar tu sesión?"
+            onClose={() => setLogoutModal(false)}
+            onConfirm={handleLogout}
+            confirmText="Cerrar sesión"
+            cancelText="Cancelar"
+            showCancelButton
+          />
 
-        {/* Modal de resetear onboarding */}
-        <AlertModal
-          visible={resetOnboardingModal}
-          type="info"
-          title="Resetear Onboarding"
-          message="¿Deseas volver a ver la introducción de la aplicación?"
-          onClose={() => setResetOnboardingModal(false)}
-          onConfirm={handleResetOnboarding}
-          confirmText="Resetear"
-          cancelText="Cancelar"
-          showCancelButton
-        />
-      </ScrollView>
+          {/* Modal de resetear onboarding */}
+          <AlertModal
+            visible={resetOnboardingModal}
+            type="info"
+            title="Resetear Onboarding"
+            message="¿Deseas volver a ver la introducción de la aplicación?"
+            onClose={() => setResetOnboardingModal(false)}
+            onConfirm={handleResetOnboarding}
+            confirmText="Resetear"
+            cancelText="Cancelar"
+            showCancelButton
+          />
+        </ScrollView>
+      </AnimatedTabScreen>
     </SafeAreaView>
   );
 }

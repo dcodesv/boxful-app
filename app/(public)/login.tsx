@@ -21,6 +21,13 @@ import {
   StatusBar,
   View,
 } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
@@ -35,6 +42,53 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [notEnabledModal, setNotEnabledModal] = useState(false);
 
+  // Animaciones
+  const logoOpacity = useSharedValue(0);
+  const logoScale = useSharedValue(0.8);
+  const headerOpacity = useSharedValue(0);
+  const headerTranslateY = useSharedValue(30);
+  const formOpacity = useSharedValue(0);
+  const formTranslateY = useSharedValue(30);
+  const buttonsOpacity = useSharedValue(0);
+  const buttonsTranslateY = useSharedValue(30);
+
+  useEffect(() => {
+    // Animación del logo
+    logoOpacity.value = withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) });
+    logoScale.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.back(1.1)) });
+    
+    // Animación del header con delay
+    headerOpacity.value = withDelay(200, withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }));
+    headerTranslateY.value = withDelay(200, withTiming(0, { duration: 450, easing: Easing.out(Easing.cubic) }));
+    
+    // Animación del formulario con más delay
+    formOpacity.value = withDelay(350, withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }));
+    formTranslateY.value = withDelay(350, withTiming(0, { duration: 450, easing: Easing.out(Easing.cubic) }));
+    
+    // Animación de los botones con aún más delay
+    buttonsOpacity.value = withDelay(500, withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }));
+    buttonsTranslateY.value = withDelay(500, withTiming(0, { duration: 450, easing: Easing.out(Easing.cubic) }));
+  }, []);
+
+  const logoAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value,
+    transform: [{ scale: logoScale.value }],
+  }));
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+    transform: [{ translateY: headerTranslateY.value }],
+  }));
+
+  const formAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: formOpacity.value,
+    transform: [{ translateY: formTranslateY.value }],
+  }));
+
+  const buttonsAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: buttonsOpacity.value,
+    transform: [{ translateY: buttonsTranslateY.value }],
+  }));
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -90,13 +144,16 @@ export default function LoginScreen() {
                 bottom: 0,
               }}
             />
-            <View className="items-center justify-center top-10 absolute">
+            <Animated.View 
+              className="items-center justify-center top-10 absolute"
+              style={logoAnimatedStyle}
+            >
               <LogoBoxFul width={150} height={80} />
-            </View>
+            </Animated.View>
           </View>
 
           <View className="flex-col items-start justify-start gap-4 py-6">
-            <View className="mb-4 px-6 w-full">
+            <Animated.View className="mb-4 px-6 w-full" style={headerAnimatedStyle}>
               <Text as="h1" variant="secondary" size="2xl" weight="semibold">
                 Bienvenido a boxful 🦄
               </Text>
@@ -104,9 +161,10 @@ export default function LoginScreen() {
               <Text as="p" variant="muted" size="base" weight="medium">
                 Ingresa tu correo electrónico
               </Text>
-            </View>
+            </Animated.View>
+            
             <View className="w-full px-6 justify-start gap-4">
-              <View className="mb-4 flex gap-1">
+              <Animated.View className="mb-4 flex gap-1" style={formAnimatedStyle}>
                 <View>
                   <Input
                     value={email}
@@ -128,9 +186,9 @@ export default function LoginScreen() {
                     secureTextEntry={true}
                   />
                 </View>
-              </View>
+              </Animated.View>
 
-              <View className="justify-start w-full gap-4">
+              <Animated.View className="justify-start w-full gap-4" style={buttonsAnimatedStyle}>
                 <Pressable className="flex-row items-center justify-center gap-2 py-1" onPress={() => setNotEnabledModal(true)}>
                   <FingerPrint
                     width={24}
@@ -192,7 +250,7 @@ export default function LoginScreen() {
                     Registrar cuenta
                   </Text>
                 </Pressable>
-              </View>
+              </Animated.View>
             </View>
           </View>
         </ScrollView>
