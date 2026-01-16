@@ -1,8 +1,14 @@
 import { Colors } from "@/constants/theme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { CloseCircle, Danger, InfoCircle, TickCircle } from "iconsax-react-nativejs";
-import { useEffect, useRef } from "react";
-import { Animated, Modal, Pressable, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Modal, Pressable, StyleSheet, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
+} from "react-native-reanimated";
 import Button from "./ui/Button";
 import Text from "./ui/Text";
 
@@ -38,30 +44,68 @@ export default function AlertModal({
   const handleConfirm = onConfirm ?? onClose;
   const handleCancel = onCancel ?? onClose;
 
-  // Animaciones
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
+  // Estado interno para mantener el modal visible durante la animación de salida
+  const [isModalVisible, setIsModalVisible] = useState(visible);
+
+  // Animaciones con Reanimated
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(50);
+
+  // Función para cerrar el modal después de la animación
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
 
   useEffect(() => {
     if (visible) {
-      Animated.parallel([
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 100,
-          friction: 8,
-        }),
-        Animated.timing(opacityAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      scaleAnim.setValue(0.8);
-      opacityAnim.setValue(0);
+      
+      // Mostrar el modal inmediatamente
+      setIsModalVisible(true);
+
+      opacity.value = withTiming(1, {
+        duration: 200,
+        easing: Easing.out(Easing.ease),
+      });
+
+      translateY.value = withTiming(0, {
+        duration: 280,
+        easing: Easing.out(Easing.back(1.2)),
+      });
+
+    } else if (isModalVisible) {
+      // Salida: sube un poco (-15px) y luego baja (+80px)
+      const exitDuration = 250;
+
+      opacity.value = withTiming(0, { 
+        duration: 200,
+        easing: Easing.in(Easing.ease),
+      });
+      
+      translateY.value = withTiming(80, {
+          duration: 400,
+          easing: Easing.out(Easing.ease),
+        })
+      
+      // Cerrar el modal después de que termine la animación
+      setTimeout(closeModal, exitDuration);
     }
-  }, [visible, scaleAnim, opacityAnim]);
+  }, [visible]);
+
+  // Resetear valores cuando el modal se cierra completamente
+  useEffect(() => {
+    if (!isModalVisible) {
+      opacity.value = 0;
+      translateY.value = 50;
+    }
+  }, [isModalVisible]);
+
+  // Estilo animado para el modal
+  const animatedModalStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: translateY.value },
+    ],
+    opacity: opacity.value,
+  }));
 
   // Definición de colores para cada tipo
   const colorSuccess = useThemeColor({ light: Colors.light.success, dark: Colors.dark.success }, 'success'); // Verde
@@ -107,12 +151,11 @@ export default function AlertModal({
   };
 
   const colorSecondary = useThemeColor({ light: Colors.light.secondary, dark: Colors.dark.secondary }, 'secondary');
-  const colorPrimary = useThemeColor({ light: Colors.light.primary, dark: Colors.dark.primary }, 'primary');
   const colorBackgroundMuted = useThemeColor({ light: Colors.light.backgroundSecondary, dark: Colors.dark.backgroundSecondary }, 'backgroundSecondary');
   const colorBorder = useThemeColor({ light: Colors.light.border, dark: Colors.dark.border }, 'border');
 
   return (
-    <Modal transparent visible={visible} animationType="fade" statusBarTranslucent>
+    <Modal transparent visible={isModalVisible} animationType="none" statusBarTranslucent>
       {/* Backdrop con blur - clickeable para cerrar */}
       <Pressable
         className="absolute inset-0"
@@ -127,10 +170,9 @@ export default function AlertModal({
         <Animated.View
           style={[            
             styles.modalContainer,
+            animatedModalStyle,
             {
               backgroundColor,
-              transform: [{ scale: scaleAnim }],
-              opacity: opacityAnim,
               borderColor: colorBackgroundMuted,
               borderWidth: 1,
             },
