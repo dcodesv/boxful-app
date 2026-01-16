@@ -18,8 +18,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const userData = {
   name: "Diego Villalobos",
-  email: "diego@boxful.com",
-  phone: "+503 7890-1234",
+  email: "diegocodesv@gmail.com",
+  phone: "+503 7663-1201",
   avatar: null,
 };
 
