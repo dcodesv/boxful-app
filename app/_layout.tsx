@@ -16,10 +16,6 @@ import { useCustomFonts } from '@/utils/fonts';
 // Mantener la pantalla de splash visible mientras se cargan las fuentes
 SplashScreen.preventAutoHideAsync();
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   
@@ -30,6 +26,11 @@ export default function RootLayout() {
     { light: Colors.light.background, dark: Colors.dark.background },
     'background'
   );
+
+  SplashScreen.setOptions({
+    duration: 400,
+    fade: true,
+  });
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -53,6 +54,8 @@ export default function RootLayout() {
   return (
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(public)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>

@@ -1,97 +1,317 @@
-import LogoBoxFul from '@/assets/images/logo-boxful.svg';
-import { router } from 'expo-router';
-import { Eye, EyeOff, Fingerprint } from 'lucide-react-native';
-import React, { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import FingerPrint from "@/assets/icons/fingerprint.svg";
+import BannerLoginDark from "@/assets/images/login-banner-dark.webp";
+import BannerLogin from "@/assets/images/login-banner.webp";
+import LogoBoxFul from "@/assets/images/logo-boxful.svg";
+import { AlertModal, Button, Input, Text } from "@/components";
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useThemeColor } from "@/hooks/use-theme-color";
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import * as SystemUI from "expo-system-ui";
+import React, { useEffect, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  View,
+} from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+
+// Schema de validación con Zod v4
+const loginSchema = z.object({
+  email: z
+    .email("Ingresa un correo electrónico válido")
+    .min(1, "El correo electrónico es requerido"),
+  password: z
+    .string()
+    .min(1, "La contraseña es requerida")
+    .min(6, "La contraseña debe tener al menos 6 caracteres"),
+});
+
+type LoginFormErrors = {
+  email?: string;
+  password?: string;
+};
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<LoginFormErrors>({});
+  const backgroundColor = useThemeColor(
+    { light: Colors.light.background, dark: Colors.dark.background },
+    "background"
+  );
 
-  const handleLogin = () => {
-    console.log("Iniciando sesión con:", email, password);
-    router.replace('/(tabs)/delivery');
+  const colorScheme = useColorScheme();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [notEnabledModal, setNotEnabledModal] = useState(false);
+
+  // Animaciones
+  const logoOpacity = useSharedValue(0);
+  const logoScale = useSharedValue(0.8);
+  const headerOpacity = useSharedValue(0);
+  const headerTranslateY = useSharedValue(30);
+  const formOpacity = useSharedValue(0);
+  const formTranslateY = useSharedValue(30);
+  const buttonsOpacity = useSharedValue(0);
+  const buttonsTranslateY = useSharedValue(30);
+
+  useEffect(() => {
+    // Animación del logo
+    logoOpacity.value = withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) });
+    logoScale.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.back(1.1)) });
+    
+    // Animación del header con delay
+    headerOpacity.value = withDelay(200, withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }));
+    headerTranslateY.value = withDelay(200, withTiming(0, { duration: 450, easing: Easing.out(Easing.cubic) }));
+    
+    // Animación del formulario con más delay
+    formOpacity.value = withDelay(350, withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }));
+    formTranslateY.value = withDelay(350, withTiming(0, { duration: 450, easing: Easing.out(Easing.cubic) }));
+    
+    // Animación de los botones con aún más delay
+    buttonsOpacity.value = withDelay(500, withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }));
+    buttonsTranslateY.value = withDelay(500, withTiming(0, { duration: 450, easing: Easing.out(Easing.cubic) }));
+  }, []);
+
+  const logoAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value,
+    transform: [{ scale: logoScale.value }],
+  }));
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+    transform: [{ translateY: headerTranslateY.value }],
+  }));
+
+  const formAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: formOpacity.value,
+    transform: [{ translateY: formTranslateY.value }],
+  }));
+
+  const buttonsAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: buttonsOpacity.value,
+    transform: [{ translateY: buttonsTranslateY.value }],
+  }));
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      SystemUI.setBackgroundColorAsync(backgroundColor);
+    }
+    return () => {
+      if (Platform.OS === "android") {
+        SystemUI.setBackgroundColorAsync(backgroundColor);
+      }
+    };
+  }, [backgroundColor]);
+
+  const handleLogin = async () => {
+    // Validar con Zod
+    const result = loginSchema.safeParse({ email, password });
+    
+    if (!result.success) {
+      const fieldErrors: LoginFormErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof LoginFormErrors;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+    
+    setErrors({});
+    setLoading(true);
+    
+    // Simular autenticación
+    setTimeout(() => {
+      setLoading(false);
+      router.replace("/(tabs)/delivery");
+    }, 1500);
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-6 py-4 justify-between">
-      
-      {/* Encabezado */}
-      <View className="items-center mt-10">
-        {/* Logo de Boxful (SVG sería ideal aquí) */}
-        <LogoBoxFul width={100} height={100} />
-      </View>
-
-      {/* Formulario */}
-      <View className="w-full">
-        <Text className="text-2xl font-bold text-blue-700 mb-2">
-            Bienvenido a boxful 👋
-        </Text>
-        <Text className="text-gray-500 mb-8">
-            Ingresa tu correo electrónico
-        </Text>
-
-        {/* Input Email */}
-        <View className="mb-4">
-            <Text className="text-blue-600 text-xs font-bold mb-1 ml-1">Email</Text>
-            <TextInput
-                className="w-full border border-blue-200 rounded-xl px-4 py-3 text-gray-800 bg-white"
-                placeholder="ejemplo@boxful.sv"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-        </View>
-
-        {/* Input Password */}
-        <View className="mb-6">
-            <Text className="text-gray-400 text-xs mb-1 ml-1">Password</Text>
-            <View className="w-full border border-gray-200 rounded-xl px-4 py-3 flex-row items-center bg-white">
-                <TextInput
-                    className="flex-1 text-gray-800"
-                    placeholder="••••••••"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                />
-                <Pressable onPress={() => setShowPassword(!showPassword)}>
-                    {showPassword ? (
-                        <EyeOff color="#9ca3af" size={20} />
-                    ) : (
-                        <Eye color="#9ca3af" size={20} />
-                    )}
-                </Pressable>
-            </View>
-        </View>
-
-        {/* Passkey / FaceID (Simulado como en tu diseño) */}
-        <Pressable className="flex-row items-center justify-center mb-6 space-x-2">
-            <Fingerprint color="#3b82f6" size={20} />
-            <Text className="text-blue-600 font-semibold">Ingresar con passkey</Text>
-        </Pressable>
-
-        {/* Botón Iniciar Sesión */}
-        <Pressable 
-            onPress={handleLogin}
-            className="w-full bg-blue-700 rounded-full py-4 items-center shadow-lg shadow-blue-200"
+    <SafeAreaView
+      edges={["bottom"]}
+      style={{
+        flex: 1,
+        backgroundColor: backgroundColor,
+      }}
+    >
+      <StatusBar
+        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+        translucent={true}
+        backgroundColor={backgroundColor}
+      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ backgroundColor: backgroundColor, flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
         >
-            <Text className="text-white font-bold text-lg">Iniciar sesión</Text>
-        </Pressable>
+          <View className="items-center flex-1 min-h-[250px] w-full relative">
+            <Image
+              cachePolicy="memory-disk"
+              priority="high"
+              recyclingKey={`banner-login-${colorScheme}`}
+              transition={200}
+              source={colorScheme === "dark" ? BannerLoginDark : BannerLogin}
+              contentFit="cover"
+              contentPosition="center"
+              style={{
+                width: "100%",
+                height: "100%",
+                flex: 1,
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+            />
+            <Animated.View 
+              className="items-center justify-center top-10 absolute"
+              style={logoAnimatedStyle}
+            >
+              <LogoBoxFul width={150} height={80} />
+            </Animated.View>
+          </View>
 
-        <View className="flex-row justify-center mt-6">
-            <Text className="text-gray-500">o también </Text>
-        </View>
+          <View className="flex-col items-start justify-start gap-4 py-6">
+            <Animated.View className="mb-4 px-6 w-full" style={headerAnimatedStyle}>
+              <Text as="h1" variant="secondary" size="2xl" weight="semibold">
+                Bienvenido a boxful 🦄
+              </Text>
 
-        <Pressable className="mt-2 items-center">
-             <Text className="text-blue-600 font-bold">Registrar cuenta</Text>
-        </Pressable>
-      </View>
+              <Text as="p" variant="muted" size="base" weight="medium">
+                Ingresa tu correo electrónico
+              </Text>
+            </Animated.View>
+            
+            <View className="w-full px-6 justify-start gap-4">
+              <Animated.View className="mb-4 flex gap-1" style={formAnimatedStyle}>
+                <View>
+                  <Input
+                    value={email}
+                    label="Correo electrónico"
+                    onChangeText={(text) => { 
+                      if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                      setEmail(text.toLowerCase()); 
+                    }}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholder="Correo electrónico"
+                    error={errors.email}
+                  />
+                </View>
+                <View>
+                  <Input
+                    value={password}
+                    label="Contraseña"
+                    onChangeText={(text) => { 
+                      if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+                      setPassword(text); 
+                    }}
+                    keyboardType="default"
+                    autoCapitalize="none"
+                    placeholder="Contraseña"
+                    secureTextEntry={true}
+                    error={errors.password}
+                  />
+                </View>
+              </Animated.View>
 
-      {/* Footer vacío o versión */}
-      <View />
+              <Animated.View className="justify-start w-full gap-4" style={buttonsAnimatedStyle}>
+                <Pressable className="flex-row items-center justify-center gap-2 py-1" onPress={() => setNotEnabledModal(true)}>
+                  <FingerPrint
+                    width={24}
+                    height={24}
+                  />
+
+                  <Text
+                    as="p"
+                    variant="muted"
+                    size="base"
+                    weight="medium"
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? Colors.dark.secondary
+                          : Colors.light.secondary,
+                    }}
+                  >
+                    Ingresar con passkey
+                  </Text>
+                </Pressable>
+
+                <Button
+                  title="Iniciar sesión"
+                  onPress={handleLogin}
+                  variant="secondary"
+                  size="medium"
+                  width="100%"
+                  loading={loading}
+                />
+
+                <View className="flex-row justify-center items-center gap-2 overflow-hidden">
+                  <View
+                    className="h-px w-full opacity-45"
+                    style={{
+                      backgroundColor:
+                        colorScheme === "dark"
+                          ? Colors.dark.iconTertiary
+                          : Colors.light.iconTertiary,
+                    }}
+                  />
+
+                  <Text as="p" variant="muted" size="base" weight="regular">
+                    o también{" "}
+                  </Text>
+
+                  <View
+                    className="h-px w-full opacity-45"
+                    style={{
+                      backgroundColor:
+                        colorScheme === "dark"
+                          ? Colors.dark.iconTertiary
+                          : Colors.light.iconTertiary,
+                    }}
+                  />
+                </View>
+
+                <Pressable className="items-center py-1" onPress={() => setNotEnabledModal(true)}>
+                  <Text as="p" variant="secondary" weight="semibold">
+                    Registrar cuenta
+                  </Text>
+                </Pressable>
+              </Animated.View>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+      <AlertModal
+        visible={notEnabledModal}
+        type="warning"
+        title="¡Ups!"
+        message="Lo sentimos, pero esta opción no está disponible en este momento"
+        onClose={() => setNotEnabledModal(false)}
+        cancelText="Entendido"
+      />
     </SafeAreaView>
   );
 }

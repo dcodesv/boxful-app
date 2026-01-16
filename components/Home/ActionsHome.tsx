@@ -1,12 +1,20 @@
 import { Add, AddCircle } from "iconsax-react-nativejs";
-import { Alert, ScrollView, View } from "react-native";
+import { useState } from "react";
+import { ScrollView, View } from "react-native";
+import AlertModal from "../AlertModal";
 import Actions from "../Home/Actions";
 import Button from "../ui/Button";
 
 export default function ActionsHome() {
+    const [notEnabledModal, setNotEnabledModal] = useState(false);
+    const [deliveryModal, setDeliveryModal] = useState(false);
 
     const actionPress = (action: string) => {
-        Alert.alert("Action pressed: ", action);
+        setNotEnabledModal(true);
+    }
+
+    const deliveryPress = () => {
+        setDeliveryModal(true);
     }
 
     const actions = [
@@ -45,7 +53,7 @@ export default function ActionsHome() {
             <Button 
                 title="Hacer envío" 
                 size="large" 
-                onPress={() => {}} 
+                onPress={deliveryPress} 
                 variant="primary" 
                 Icon={AddCircle} 
                 width="100%"
@@ -63,7 +71,22 @@ export default function ActionsHome() {
                     />
                 ))}
             </ScrollView>
-            
+            <AlertModal
+                visible={notEnabledModal}
+                type="warning"
+                title="¡Ups!"
+                message="Lo sentimos, pero esta opción no está disponible en este momento."
+                onClose={() => setNotEnabledModal(false)}
+                cancelText="Entendido"
+            />
+            <AlertModal
+                visible={deliveryModal}
+                type="success"
+                title="Exito"
+                message="El envío se ha realizado correctamente. ¡Gracias por utilizar Boxful!"
+                onClose={() => setDeliveryModal(false)}
+                cancelText="Entendido"
+            />
         </View>
     );
 }

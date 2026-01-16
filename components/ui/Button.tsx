@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import React from "react";
-import { DimensionValue, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, DimensionValue, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from "react-native";
 
 interface ButtonProps {
     title?: string;
@@ -9,9 +9,14 @@ interface ButtonProps {
     variant?: 'primary' | 'secondary';
     size?: 'small' | 'medium' | 'large';
     disabled?: boolean;
+    loading?: boolean;
     Icon?: React.ComponentType<{ size?: number; color?: string }>;
     iconPosition?: 'left' | 'right';
+    iconColor?: string;
     width?: DimensionValue | undefined;
+    style?: StyleProp<ViewStyle>;
+    className?: string;
+    textStyle?: StyleProp<TextStyle>;
 }
 
 export default function Button({ 
@@ -19,10 +24,15 @@ export default function Button({
     onPress, 
     variant = 'primary', 
     size = 'medium', 
-    disabled = false, 
+    disabled = false,
+    loading = false,
     Icon, 
     iconPosition = 'left',
+    iconColor = undefined,
     width = undefined,
+    style = {},
+    className = '',
+    textStyle = {},
 }: ButtonProps) {
     // Background colors
     const colorPrimary = useThemeColor({ light: Colors.light.primary, dark: Colors.dark.primary }, 'primary');
@@ -38,7 +48,7 @@ export default function Button({
 
     const backgroundColor = variant === 'primary' ? colorPrimary : colorSecondary;
     const textColor = variant === 'primary' ? colorPrimaryText : colorSecondaryText;
-    const iconColor = variant === 'primary' ? colorIconPrimary : colorIconSecondary;
+    const iconColorComponent = variant === 'primary' ? colorIconPrimary : colorIconSecondary;
 
     const height = size === 'small' ? 42 : size === 'medium' ? 48 : 56;
     const paddingHorizontal = size === 'small' ? 16 : size === 'medium' ? 20 : 24;
@@ -46,42 +56,48 @@ export default function Button({
     const textSize = size === 'small' ? 12 : size === 'medium' ? 14 : 16;
 
     const buttonStyle = [
-        styles.button,
         {
             backgroundColor,
             height,
             paddingHorizontal,
-            opacity: disabled ? 0.5 : 1,
+            opacity: disabled || loading ? 0.7 : 1,
             width,
-        }
+        },
+        styles.button,
     ];
 
-    const textStyle = [
-        styles.text,
+    const textStyleComponent = [
         {
             color: textColor,
             fontSize: textSize,
-        }
+        },
+        styles.text,
     ];
 
     return (
         <TouchableOpacity 
             onPress={onPress} 
-            disabled={disabled} 
-            style={buttonStyle}
+            disabled={disabled || loading} 
             activeOpacity={0.7}
-            className="flex-row items-center justify-center rounded-xl"
+            className={`flex-row items-center justify-center rounded-xl ${className}`}
+            style={[buttonStyle, style]}
         >
-            {Icon && iconPosition === 'left' && (
-                <Icon size={iconSize} color={iconColor} />
-            )}
-            {title && (
-                <Text style={textStyle} className="font-mona-medium">
-                    {title}
-                </Text>
-            )}
-            {Icon && iconPosition === 'right' && (
-                <Icon size={iconSize} color={iconColor} />
+            {loading ? (
+                <ActivityIndicator size="small" color={textColor} />
+            ) : (
+                <>
+                    {Icon && iconPosition === 'left' && (
+                        <Icon size={iconSize} color={iconColorComponent || iconColor} />
+                    )}
+                    {title && (
+                        <Text style={[styles.text, textStyleComponent, textStyle]} className="font-mona-medium">
+                            {title}
+                        </Text>
+                    )}
+                    {Icon && iconPosition === 'right' && (
+                        <Icon size={iconSize} color={iconColorComponent || iconColor} />
+                    )}
+                </>
             )}
         </TouchableOpacity>
     );
