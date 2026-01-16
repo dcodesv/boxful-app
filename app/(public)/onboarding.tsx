@@ -80,8 +80,8 @@ export default function OnboardingScreen() {
       duration: 500, 
       easing: Easing.out(Easing.cubic) 
     });
-    exitTranslateY.value = withTiming(80, { 
-      duration: animationDuration, 
+    exitTranslateY.value = withTiming(20, { 
+      duration: 100, 
       easing: Easing.out(Easing.cubic) 
     });
     
@@ -120,10 +120,7 @@ export default function OnboardingScreen() {
       return {
         transform: [
           {
-            translateY: interpolate(floatAnimation.value, [0, 1], [0, 20], Extrapolation.CLAMP),
-          },
-          {
-            translateX: interpolate(floatAnimation.value, [0, 1], [0, 10], Extrapolation.CLAMP),
+            translateY: interpolate(floatAnimation.value, [0, 1], [-10, 40], Extrapolation.CLAMP),
           },
           {
             scale: interpolate(floatAnimation.value, [0, 1], [0.95, 1.05], Extrapolation.CLAMP),
@@ -138,10 +135,10 @@ export default function OnboardingScreen() {
         style={{
           width: width,
           flex: 1,
+          backgroundColor: Colors.light.secondary,
         }}
         className="relative"
       >
-        {/* Imagen de fondo que cubre todo */}
         <Image
           source={item.background}
           contentFit="cover"
@@ -172,7 +169,6 @@ export default function OnboardingScreen() {
           />
         </Animated.View>
 
-        {/* Contenido sobre la imagen */}
         <View className="items-center justify-end py-4 relative mb-28">
           <Text
             as="p"
@@ -206,8 +202,6 @@ export default function OnboardingScreen() {
         [20, 30, 20],
         Extrapolation.CLAMP
       );
-
-      // Animamos la opacidad
       const opacity = interpolate(
         scrollX.value,
         [(index - 1) * width, index * width, (index + 1) * width],
