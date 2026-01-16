@@ -2,10 +2,7 @@ import FingerPrint from "@/assets/icons/fingerprint.svg";
 import BannerLoginDark from "@/assets/images/login-banner-dark.webp";
 import BannerLogin from "@/assets/images/login-banner.webp";
 import LogoBoxFul from "@/assets/images/logo-boxful.svg";
-import AlertModal from "@/components/AlertModal";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
-import Text from "@/components/ui/Text";
+import { AlertModal, Button, Input, Text } from "@/components";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useThemeColor } from "@/hooks/use-theme-color";
@@ -29,9 +26,26 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+
+// Schema de validación con Zod v4
+const loginSchema = z.object({
+  email: z
+    .email("Ingresa un correo electrónico válido")
+    .min(1, "El correo electrónico es requerido"),
+  password: z
+    .string()
+    .min(1, "La contraseña es requerida")
+    .min(6, "La contraseña debe tener al menos 6 caracteres"),
+});
+
+type LoginFormErrors = {
+  email?: string;
+  password?: string;
+};
 
 export default function LoginScreen() {
-  
+  const [errors, setErrors] = useState<LoginFormErrors>({});
   const backgroundColor = useThemeColor(
     { light: Colors.light.background, dark: Colors.dark.background },
     "background"
@@ -40,6 +54,7 @@ export default function LoginScreen() {
   const colorScheme = useColorScheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [notEnabledModal, setNotEnabledModal] = useState(false);
 
   // Animaciones
@@ -101,9 +116,30 @@ export default function LoginScreen() {
     };
   }, [backgroundColor]);
 
-  const handleLogin = () => {
-    console.log("Iniciando sesión con:", email, password);
-    router.replace("/(tabs)/delivery");
+  const handleLogin = async () => {
+    // Validar con Zod
+    const result = loginSchema.safeParse({ email, password });
+    
+    if (!result.success) {
+      const fieldErrors: LoginFormErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof LoginFormErrors;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+    
+    setErrors({});
+    setLoading(true);
+    
+    // Simular autenticación
+    setTimeout(() => {
+      setLoading(false);
+      router.replace("/(tabs)/delivery");
+    }, 1500);
   };
 
   return (
@@ -130,6 +166,10 @@ export default function LoginScreen() {
         >
           <View className="items-center flex-1 min-h-[250px] w-full relative">
             <Image
+              cachePolicy="memory-disk"
+              priority="high"
+              recyclingKey={`banner-login-${colorScheme}`}
+              transition={200}
               source={colorScheme === "dark" ? BannerLoginDark : BannerLogin}
               contentFit="cover"
               contentPosition="center"
@@ -169,21 +209,29 @@ export default function LoginScreen() {
                   <Input
                     value={email}
                     label="Correo electrónico"
-                    onChangeText={setEmail}
+                    onChangeText={(text) => { 
+                      if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                      setEmail(text.toLowerCase()); 
+                    }}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     placeholder="Correo electrónico"
+                    error={errors.email}
                   />
                 </View>
                 <View>
                   <Input
                     value={password}
                     label="Contraseña"
-                    onChangeText={setPassword}
+                    onChangeText={(text) => { 
+                      if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+                      setPassword(text); 
+                    }}
                     keyboardType="default"
                     autoCapitalize="none"
                     placeholder="Contraseña"
                     secureTextEntry={true}
+                    error={errors.password}
                   />
                 </View>
               </Animated.View>
@@ -217,6 +265,7 @@ export default function LoginScreen() {
                   variant="secondary"
                   size="medium"
                   width="100%"
+                  loading={loading}
                 />
 
                 <View className="flex-row justify-center items-center gap-2 overflow-hidden">

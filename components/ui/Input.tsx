@@ -100,7 +100,7 @@ export default function Input({
         <Text
           as="p"
           variant="error"
-          size="sm"
+          size="xs"
           weight="semibold"
           className="ml-2 mt-1"
         >

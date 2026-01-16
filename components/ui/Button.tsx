@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import React from "react";
-import { DimensionValue, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from "react-native";
+import { ActivityIndicator, DimensionValue, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from "react-native";
 
 interface ButtonProps {
     title?: string;
@@ -9,6 +9,7 @@ interface ButtonProps {
     variant?: 'primary' | 'secondary';
     size?: 'small' | 'medium' | 'large';
     disabled?: boolean;
+    loading?: boolean;
     Icon?: React.ComponentType<{ size?: number; color?: string }>;
     iconPosition?: 'left' | 'right';
     iconColor?: string;
@@ -23,7 +24,8 @@ export default function Button({
     onPress, 
     variant = 'primary', 
     size = 'medium', 
-    disabled = false, 
+    disabled = false,
+    loading = false,
     Icon, 
     iconPosition = 'left',
     iconColor = undefined,
@@ -58,7 +60,7 @@ export default function Button({
             backgroundColor,
             height,
             paddingHorizontal,
-            opacity: disabled ? 0.5 : 1,
+            opacity: disabled || loading ? 0.7 : 1,
             width,
         },
         styles.button,
@@ -75,21 +77,27 @@ export default function Button({
     return (
         <TouchableOpacity 
             onPress={onPress} 
-            disabled={disabled} 
+            disabled={disabled || loading} 
             activeOpacity={0.7}
             className={`flex-row items-center justify-center rounded-xl ${className}`}
             style={[buttonStyle, style]}
         >
-            {Icon && iconPosition === 'left' && (
-                <Icon size={iconSize} color={iconColorComponent || iconColor} />
-            )}
-            {title && (
-                <Text style={[styles.text, textStyleComponent, textStyle]} className="font-mona-medium">
-                    {title}
-                </Text>
-            )}
-            {Icon && iconPosition === 'right' && (
-                <Icon size={iconSize} color={iconColorComponent || iconColor} />
+            {loading ? (
+                <ActivityIndicator size="small" color={textColor} />
+            ) : (
+                <>
+                    {Icon && iconPosition === 'left' && (
+                        <Icon size={iconSize} color={iconColorComponent || iconColor} />
+                    )}
+                    {title && (
+                        <Text style={[styles.text, textStyleComponent, textStyle]} className="font-mona-medium">
+                            {title}
+                        </Text>
+                    )}
+                    {Icon && iconPosition === 'right' && (
+                        <Icon size={iconSize} color={iconColorComponent || iconColor} />
+                    )}
+                </>
             )}
         </TouchableOpacity>
     );
