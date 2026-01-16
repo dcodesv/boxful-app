@@ -1,10 +1,11 @@
-import { Colors } from '@/constants/theme';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { Box } from 'iconsax-react-nativejs';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import Text from '../ui/Text';
+import { Text } from "@/components";
+import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useThemeColor } from "@/hooks/use-theme-color";
+import { Box } from "iconsax-react-nativejs";
+import { TouchableOpacity, View } from "react-native";
 
-type SendStatus = 'completado' | 'pendiente' | 'atrasado';
+type SendStatus = "completado" | "pendiente" | "atrasado";
 
 interface SendItem {
   id: string;
@@ -17,111 +18,94 @@ interface SendListProps {
   onItemPress?: (item: SendItem) => void;
 }
 
+// Datos de prueba para mostrar mientras no haya conexión con el backend
 const defaultItems: SendItem[] = [
-  {
-    id: '1',
-    recipientName: 'Saúl López',
-    status: 'completado',
-  },
-  {
-    id: '2',
-    recipientName: 'Saúl López',
-    status: 'pendiente',
-  },
-  {
-    id: '3',
-    recipientName: 'Saúl López',
-    status: 'atrasado',
-  },
-  {
-    id: '4',
-    recipientName: 'Saúl López',
-    status: 'atrasado',
-  },
-  {
-    id: '5',
-    recipientName: 'Saúl López',
-    status: 'atrasado',
-  },
-  {
-    id: '6',
-    recipientName: 'Saúl López',
-    status: 'atrasado',
-  },
+  { id: "1", recipientName: "Saúl López", status: "completado" },
+  { id: "2", recipientName: "María García", status: "pendiente" },
+  { id: "3", recipientName: "Carlos Martínez", status: "atrasado" },
+  { id: "4", recipientName: "Ana Rodríguez", status: "pendiente" },
+  { id: "5", recipientName: "Pedro Sánchez", status: "completado" },
+  { id: "6", recipientName: "Laura Fernández", status: "atrasado" },
 ];
 
+// Colores para los estados de los envíos
+const statusColors = {
+  completado: { light: "#4CAF50", dark: "#66BB6A" },
+  pendiente: { light: "#FF6139", dark: "#FF8A65" },
+  atrasado: { light: "#F44336", dark: "#EF5350" },
+};
+
+// Textos para los estados
+const statusLabels: Record<SendStatus, string> = {
+  completado: "Completado",
+  pendiente: "Pendiente",
+  atrasado: "Atrasado",
+};
+
 export default function SendList({ items = defaultItems, onItemPress }: SendListProps) {
-  const backgroundColorSecondary = useThemeColor(
+  const colorScheme = useColorScheme();
+  
+  // Colores del tema
+  const bgSecondary = useThemeColor(
     { light: Colors.light.backgroundSecondary, dark: Colors.dark.backgroundSecondary },
-    'backgroundSecondary'
+    "backgroundSecondary"
   );
-  const backgroundColor = useThemeColor(
+  const bgCard = useThemeColor(
     { light: Colors.light.background, dark: Colors.dark.background },
-    'background'
+    "background"
   );
-  const mutedColor = useThemeColor({ light: Colors.light.iconTertiary, dark: Colors.dark.iconTertiary }, 'iconTertiary');
-  const borderColor = useThemeColor({ light: Colors.light.border, dark: Colors.dark.border }, 'border');
+  const borderColor = useThemeColor(
+    { light: Colors.light.border, dark: Colors.dark.border },
+    "border"
+  );
+  const iconBg = useThemeColor(
+    { light: "#E8DCD9", dark: "#3D2E2A" },
+    "background"
+  );
+  const iconColor = useThemeColor(
+    { light: "#60433B", dark: "#C4A99E" },
+    "text"
+  );
 
+  // Obtener el color según el estado y el tema actual
   const getStatusColor = (status: SendStatus): string => {
-    switch (status) {
-      case 'completado':
-        return '#4CAF50';
-      case 'pendiente':
-        return '#FF6139';
-      case 'atrasado':
-        return '#F44336';
-      default:
-        return mutedColor;
-    }
+    const colors = statusColors[status];
+    return colorScheme === "dark" ? colors.dark : colors.light;
   };
 
-  const getStatusText = (status: SendStatus): string => {
-    switch (status) {
-      case 'completado':
-        return 'Completado';
-      case 'pendiente':
-        return 'Pendiente';
-      case 'atrasado':
-        return 'Atrasado';
-      default:
-        return '';
-    }
-  };
-
-  return (    
-    <View className="flex-col gap-4 px-4 py-6 my-4 rounded-xl" style={{ backgroundColor: backgroundColorSecondary }}>
-
+  return (
+    <View 
+      className="flex-col gap-4 px-4 py-6 my-4 rounded-xl" 
+      style={{ backgroundColor: bgSecondary }}
+    >
       <Text weight="semibold" size="xl">
         Envíos recientes
       </Text>
-      
+
       <View className="flex-col gap-3">
         {items.map((item) => (
           <TouchableOpacity
             key={item.id}
             onPress={() => onItemPress?.(item)}
             activeOpacity={0.7}
-            style={[
-              styles.card,
-              {
-                backgroundColor,
-                borderWidth: 1,
-                borderColor: borderColor,
-              },
-            ]}
             className="flex-row items-center gap-4 rounded-xl px-4 py-5"
+            style={{
+              backgroundColor: bgCard,
+              borderWidth: 1,
+              borderColor: borderColor,
+            }}
           >
-            {/* Icono circular */}
+            {/* Icono del paquete */}
             <View
-              style={styles.iconContainer}
-              className="w-10 h-10 rounded-full items-center justify-center bg-[#E8DCD9]"
+              className="w-10 h-10 rounded-full items-center justify-center"
+              style={{ backgroundColor: iconBg }}
             >
-              <Box size={22} color="#60433B" variant="Outline" />
+              <Box size={22} color={iconColor} variant="Outline" />
             </View>
 
-            {/* Información del destinatario */}
+            {/* Info del destinatario */}
             <View className="flex-1 flex-col">
-              <Text size="xs" variant="muted" weight="regular" className='tracking-wider'>
+              <Text size="xs" variant="muted" weight="regular" className="tracking-wider">
                 Destinatario
               </Text>
               <Text size="base" variant="tertiary" weight="semibold">
@@ -129,16 +113,14 @@ export default function SendList({ items = defaultItems, onItemPress }: SendList
               </Text>
             </View>
 
-            {/* Estado */}
+            {/* Badge de estado */}
             <Text
               size="xs"
               weight="semibold"
-              className='tracking-wide'
-              style={{
-                color: getStatusColor(item.status),
-              }}
+              className="tracking-wide"
+              style={{ color: getStatusColor(item.status) }}
             >
-              {getStatusText(item.status)}
+              {statusLabels[item.status]}
             </Text>
           </TouchableOpacity>
         ))}
@@ -146,12 +128,3 @@ export default function SendList({ items = defaultItems, onItemPress }: SendList
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    // Estilos adicionales si es necesario
-  },
-  iconContainer: {
-    // Estilos del contenedor del icono
-  },
-});
